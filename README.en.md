@@ -1,5 +1,12 @@
 # Aster MCA Nano — CH32
 
+> **Repository moved / 仓库已迁移**
+>
+> Development and current documentation are maintained at **[Aster-MCA/nano](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano)**.
+> [AT32 track](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/docs/at32/README.en.md) · [CH32 track](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/docs/ch32) · [中文](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/README.md)
+>
+> This repository retains historical files, branches and existing download links. Nano project-authored material uses [MIT](LICENSE); [third-party terms](THIRD_PARTY_NOTICES.md) remain applicable.
+
 [中文](README.md) | English | [All project tracks](https://github.com/pulsefoundry/Aster-MCA-Nano/tree/main)
 
 **CH32X033F8P6 baseline drift and abnormal spikes are still under investigation. Reliable spectroscopy has not been validated.** This branch preserves the CH32 analog-chain diagnostic implementation. A valid USB transfer or waveform checksum does not establish pulse-height accuracy or energy resolution.
@@ -29,4 +36,4 @@ The next gate is a stable baseline with a controlled input condition, followed b
 
 [Development guide](docs/development.md) · [Detailed CH32 status](docs/ch32/README.md) · [Chinese/English project overview](https://github.com/pulsefoundry/Aster-MCA-Nano/tree/main)
 
-The common host and AT32 archives remain in the repository for reference. They are not validation of CH32 spectroscopy. A project-wide open-source license has not been selected. WCH code retains its original notices and WCH-microcontroller-only restrictions; see [SOURCE-NOTES](firmware/ch32-selftest-v0.3/SOURCE-NOTES.txt).
+The common host and AT32 archives remain in the repository for reference. They are not validation of CH32 spectroscopy. Nano project-authored material is licensed under [MIT](LICENSE). WCH code retains its original notices and WCH-microcontroller-only restrictions; see [SOURCE-NOTES](firmware/ch32-selftest-v0.3/SOURCE-NOTES.txt).

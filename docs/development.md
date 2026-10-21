@@ -87,4 +87,4 @@ The analyzer rechecks segment IDs, lengths, ADC range, CRC, statistics and stop 
 - `docs`: bilingual project/track documentation, price inputs and photographs.
 - `work`: ignored SDKs, toolchains, virtual environments and temporary captures.
 
-Manufacturing and experimental artifacts keep their original bytes. Do not normalize archived line endings or overwrite measurements when reproducing analyses. Project licensing has not been selected; retain all third-party notices and restrictions.
+Manufacturing and experimental artifacts keep their original bytes. Do not normalize archived line endings or overwrite measurements when reproducing analyses. Nano project-authored material uses [MIT](../LICENSE); retain all [third-party notices and restrictions](../THIRD_PARTY_NOTICES.md).

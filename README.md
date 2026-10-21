@@ -1,5 +1,12 @@
 # Aster MCA Nano — CH32
 
+> **仓库已迁移 / Repository moved**
+>
+> 后续开发与完整资料位于 **[Aster-MCA/nano](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano)**。
+> [AT32 主线](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/docs/at32) · [CH32 主线](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/docs/ch32) · [English](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/README.en.md)
+>
+> 本仓库保留历史文件、分支和旧下载链接。Nano 项目原创内容采用 [MIT](LICENSE)，第三方条款见[说明](THIRD_PARTY_NOTICES.md)。
+
 中文 | [English](README.en.md) | [项目总览](https://github.com/pulsefoundry/Aster-MCA-Nano/tree/main)
 
 **CH32X033F8P6 仍在处理基线漂移和异常尖峰问题。当前是模拟链与 ADC 诊断分支，尚未完成可靠采谱验证。**
