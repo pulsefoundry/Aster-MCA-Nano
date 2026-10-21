@@ -1,119 +1,94 @@
 # Aster MCA Nano
 
-低成本、小型化的通用多道脉冲幅度分析器原型，包含 CH32X033F8P6 与 AT32F423 两种 PCB。当前采谱开发主线是 **AT32F423CCT7 + TLV9061**，接收探头已有放大／整形电路输出的负脉冲。
+中文 | [English](README.en.md)
 
-本仓库保存硬件工程、生产与手焊资料、固件、macOS 上位机源码，以及有明确采集条件的实验记录。它与 FPGA 版 [Aster MCA](https://github.com/pulsefoundry/Aster-MCA) 是两个项目。
+低成本、**32 × 18 mm** 的 USB 多道脉冲幅度分析器原型。接收探测器已有放大／整形电路的低压输出，板上完成 ADC 采样和脉冲幅度直方图累计，电脑负责显示和保存。
 
-## 当前检查点：2026-10-18
+本项目分为 **AT32 与 CH32 两条开发主线**，与 FPGA 版 [Aster MCA](https://github.com/pulsefoundry/Aster-MCA) 是独立项目。
 
-| 项目 | 当前状态 |
+| 主线 | 状态 | 资料入口 | Git 分支 |
+|---|---|---|---|
+| **AT32F423 + TLV9061** | 当前采谱主线；4 MS/s、2048 道，已保存铯源实测 | [AT32 指南](docs/at32/README.md) | [codex/at32](https://github.com/pulsefoundry/Aster-MCA-Nano/tree/codex/at32) |
+| **CH32X033F8P6** | **仍在处理基线漂移与异常尖峰问题**；目前为模拟链诊断阶段，尚未完成可靠采谱验证 | [CH32 状态与硬件](docs/ch32/README.md) | [codex/ch32](https://github.com/pulsefoundry/Aster-MCA-Nano/tree/codex/ch32) |
+
+`main` 保存总览、共享上位机和实验档案；两条器件分支分别提供开发入口，固件位于各自的 `firmware` 子目录。文档整理于 2026-10-21，最近一次上板实验为 2026-10-18。
+
+## AT32 实物
+
+<p>
+  <img src="docs/at32/photos/IMG_1201.JPG" width="300" alt="手焊 AT32 MCA Nano，与手指对比大小">
+  <img src="docs/at32/photos/IMG_1202.JPG" width="300" alt="AT32 MCA Nano 连接 USB，两颗蓝色指示灯亮起">
+</p>
+
+实装为 AT32F423CCT7、TLV9061，USB-A 公头、SMA 母座，PCB 厚 1.6 mm，两颗蓝色 LED 分别指示通电和运行。照片为手焊原型；公开副本移除了位置等元数据，保留原始像素与显示方向。
+
+## AT32 当前配置与固件
+
+| 项目 | 配置 |
 |---|---|
-| AT32 硬件 | v0.3，AT32F423CCT7；R21 = 40.2 kΩ、R22 = 10 kΩ，运放标称增益 5.02 |
-| 固件 | `firmware/at32-peak-scope`，v0.8.2 |
-| 采谱 | 4 MS/s，12 位 ADC；板上取峰并累计 2048 道，到时停止后回传一次能谱 |
-| 触发门限 | 当前改焊板用 **100 ADC 码**；原增益配置用 20 码 |
-| 波形诊断 | 仅空闲时采 4096 点／1.024 ms，停止后上传；段间有采样空隙 |
-| 桌面软件 | macOS 原生窗口 v0.6.1，源码位于 `firmware/at32-continuous/desktop` |
-| 最新实测 | 改焊后铯源采集 60.000256 s，接受 17,611 事件，所有 58,594 个 DMA 块处理完成，无设备错误或 ADC 溢出 |
+| PCB | v0.3，32 × 18 mm；原工程 MCU 为 CBT7，当前实物为 CCT7 |
+| 模拟前端 | TLV9061；R21 = 40.2 kΩ、R22 = 10 kΩ，运放标称增益 5.02 |
+| 固件 | **v0.8.2**，[源码](firmware/at32-peak-scope) · [已验证 BIN](outputs/Aster-MCA-Nano-AT32-波形诊断-v0.8.2-20261018/aster-at32-peak-v0.8.2.bin) |
+| 正常采谱 | 4 MS/s、12 位 ADC，负脉冲取峰，板上累计 2048 道；到设定时间停止后一次回传 |
+| 改焊板触发门限 | **100 ADC 码**；原增益配置为 20 码 |
+| RAW 诊断 | 空闲时抓取 4096 点／1.024 ms，停止后上传；段间有空隙 |
+| 上位机 | [macOS 原生桌面软件源码](firmware/at32-continuous/desktop)，v0.6.1；保留浏览器开发入口 |
 
-改焊前／后的各 60 秒总源谱，用同一高斯峰加线性连续本底模型拟合，相对峰宽为 **17.20%／16.07%**。峰位从 78.33 移到 408.79 ADC 码，后者按标称 3.3 V 参考换算约 0.329 V。
+上位机目前在重连后会回填门限 20，使用改焊板需手动确认 **100**。[构建、使用和离线复核](docs/development.md)说明 SDK、工具链和软件检查；[AT32 指南](docs/at32/README.md)说明固件适用配置及烧录工具限制。
 
-这是一次短时对照实验，不是探头本征分辨率或硬件极限。拟合窗口变化后，改焊后的结果约为 15.36%–16.96%；模型条件下的差值 95% 区间为 −2.50 至 +0.33 个百分点，仍包含零，**尚未证明显著改善**。未做多点能量标定。
+## 已保存的铯源谱
 
-![改焊前后拟合对照](outputs/Aster-MCA-Nano-AT32-增益5倍实测-20261018/gain-peak-fit-comparison.png)
+![AT32 最新 60 秒铯源完整 2048 道谱及局部视图](docs/at32/cs137-60s-spectrum.png)
 
-完整状态及下一步见 [检查点](docs/2026-10-18-checkpoint.md)。当前板子采集已停止，后续上板操作需先重新确认实体接线与源状态。
+蓝线为未平滑总源谱，灰线为按采样时长缩放的本底，未作相减；左图覆盖全部 2048 道，右图放大 0–650 道。下面保留原增益改焊前后的峰拟合对照。
 
-## 目录
+![AT32 改焊前后各 60 秒的铯源峰拟合](outputs/Aster-MCA-Nano-AT32-增益5倍实测-20261018/gain-peak-fit-comparison.png)
 
-- `firmware/at32-peak-scope`：当前 v0.8.2，正常取峰谱与有限长度 RAW 诊断。
-- `firmware/at32-peak`：v0.8.0 取峰基线。
-- `firmware/at32-histogram`：v0.6.3 积分谱基线及共享谱通信校验代码。
-- `firmware/at32-continuous`：上位机、共享模型与早期 1 MS/s 连续采样分支；其桌面界面也支持当前板上取峰谱。
-- `firmware/ch32-selftest-v0.3`：CH32 历史模拟链／波形诊断源码，不是已验证的采谱固件。
-- 其余 `firmware/at32-*`：采样、选窗和 USB 传输实验历史。v0.7.x 在真实脉冲下未通过持续处理验证，不作为当前稳定路径。
-- `outputs`：命名的生产资料、焊接对照、固件镜像、原始数据、图与验证记录。
-- `analysis/20261018`：使用仓库内已保存数据复现增益对照拟合。
-- `work`：本机工具链、第三方 SDK、虚拟环境、实时记录与临时分析目录，不纳入 Git。
+| 60 秒总源谱 | 原增益配置 | 改焊后配置 |
+|---|---:|---:|
+| 固件 | v0.8.0 | v0.8.2，整数取峰算法相同 |
+| 运放标称增益／门限 | 1／20 码 | 5.02／100 码 |
+| 接受事件 | 15,896 | 17,611 |
+| 峰位／ADC 码 | 78.33 | 408.79 |
+| FWHM／峰位 | 17.20% | **16.07%** |
 
-## 硬件资料
+横轴仍为道数／ADC 码，未做多点能量标定。图中为未平滑总源谱的高斯峰加线性连续本底拟合，没有先扣本底。改焊后拟合窗口敏感性约 15.36%–16.96%；前后差值的模型条件下 95% 区间为 −2.50 至 +0.33 个百分点，尚不能确认分辨率改善，也不能据此认定探头本征分辨率。
 
-| 资料 | 路径 |
-|---|---|
-| AT32 单板工程、Gerber、BOM | [AT32 v0.3](outputs/Aster-MCA-Nano-AT32-v0.3-USB-A-LED) |
-| CH32 单板工程、Gerber、BOM | [CH32 v0.3](outputs/Aster-MCA-Nano-CH32-v0.3-USB-A-LED) |
-| AT32 手焊对照 | [焊接资料](outputs/Aster-MCA-Nano-AT32-v0.3-焊接对照) |
-| 本次 R21/R22 改焊 | [位置图及步骤](outputs/Aster-MCA-Nano-AT32-增益改焊-20261018) |
-| 历史开槽合板工程 | [v0.3.1](outputs/Aster-MCA-Nano-v0.3.1-SlotCut-Bridge2p5-32x38) |
+最新 60.000256 s 采集的 58,594 个 DMA 块全部完成，记录中无设备错误或 ADC 溢出。这是该次采集的结果，尚未建立全计数率范围的性能指标。
 
-单板 32 × 18 mm，USB-A 与 SMA 接口。实装板厚为 1.6 mm；本轮 SMA 使用外置插座与短线连接。历史合板曾因同文件包含两种设计被厂方拒单，保留作工程参考，不能视为已批准的生产文件。
+- [最新 2048 道源谱 CSV](outputs/Aster-MCA-Nano-AT32-增益5倍实测-20261018/Cs-source-60s-2048ch.csv) · [元数据](outputs/Aster-MCA-Nano-AT32-增益5倍实测-20261018/Cs-source-60s-2048ch-metadata.json)
+- [原始谱、短波形、本底与拟合记录](outputs/Aster-MCA-Nano-AT32-增益5倍实测-20261018) · [实验检查点](docs/2026-10-18-checkpoint.md)
+- [早期 v0.6.3 十分钟铯源谱](outputs/Aster-MCA-Nano-AT32-v0.6.3-铯源10分钟分辨率-20261016/铯源谱与分辨率拟合.png)：积分算法和配置不同，仅作历史记录。
 
-AT32 原 BOM 为 R21 = 0 Ω、R22 不装；当前实测改焊配置覆盖这两个默认值。CH32 移除 C9 的历史诊断结果不直接套用于 AT32。两块板的焊接对照需分别使用。
+## AT32 单板成本
 
-## 本地运行与软件检查
+**已知价格部分约 ¥17.86／板，另加外购 USB-A、SMA 和两颗库存 LED 的实际成本。**
 
-上位机和本地 C 辅助库当前按 macOS 环境验证，需要 Python 3 与可用的 `cc`。下面的检查使用模拟串口或已保存数据，不访问实体板子：
+| 项目 | 单板金额 |
+|---|---:|
+| PCB，按项目给定成本 | ¥4.00 |
+| AT32，按项目给定成本 | ¥5.00 |
+| 其余已报价元件，按当前改焊用量 | ¥8.855465 |
+| **已知价格合计** | **¥17.855465，约 ¥17.86** |
+| USB-A、SMA、LED1/LED2 | 缺少实际价格，未计入 |
 
-```sh
-python3 -m unittest discover -s firmware/at32-peak-scope -p 'test_*.py' -v
-python3 -m unittest discover -s firmware/at32-continuous -p 'test_*gui.py' -v
-```
+阻容和其他芯片沿用 2026-10-10 BOM 报价的单价，逐项乘以单板实装数量。不是五套采购额的平均值，也不含起订余料、运费、焊接人工、外壳或探头。详见[逐项成本、料号与计算口径](docs/at32/cost.md)和[价格输入](docs/at32/cost-inputs.json)。
 
-部分长历史重放测试依赖本机 `work` 数据，新克隆缺少这些数据时会明确跳过。仓库保留了本次 500 段本底／铯源波形和前后各 60 秒谱，供独立复核。
+## 原理图、Gerber 和装配
 
-浏览器开发入口：
+| 下载 | AT32 v0.3 | CH32 v0.3 |
+|---|---|---|
+| 原理图 PDF | [AT32 原理图](outputs/Aster-MCA-Nano-AT32-v0.3-USB-A-LED/Aster-MCA-Nano-AT32-v0.3-USB-A-LED-Schematic.pdf) | [CH32 原理图](outputs/Aster-MCA-Nano-CH32-v0.3-USB-A-LED/Aster-MCA-Nano-CH32-v0.3-USB-A-LED-Schematic.pdf) |
+| Gerber ZIP | [AT32 Gerber](outputs/Aster-MCA-Nano-AT32-v0.3-USB-A-LED/Aster-MCA-Nano-AT32-v0.3-USB-A-LED-Gerber.zip) | [CH32 Gerber](outputs/Aster-MCA-Nano-CH32-v0.3-USB-A-LED/Aster-MCA-Nano-CH32-v0.3-USB-A-LED-Gerber.zip) |
+| 立创 EDA 工程、BOM、PCB 图 | [AT32 硬件包](outputs/Aster-MCA-Nano-AT32-v0.3-USB-A-LED) | [CH32 硬件包](outputs/Aster-MCA-Nano-CH32-v0.3-USB-A-LED) |
+| 手焊位号与料号对照 | [AT32 装配](outputs/Aster-MCA-Nano-AT32-v0.3-焊接对照) | [CH32 装配](outputs/Aster-MCA-Nano-CH32-v0.3-焊接对照) |
 
-```sh
-python3 firmware/at32-continuous/gui.py --open
-```
+原 v0.3 文件保留发布状态：AT32 R21 = 0 Ω、R22 不装。复现当前实测须按[增益改焊说明](outputs/Aster-MCA-Nano-AT32-增益改焊-20261018)覆盖这两项。CH32 移除 C9 是诊断改动，不适用于 AT32。接头替代件需核对焊盘和实际板厚，照片中的外购件不代表原 BOM 连接器型号。
 
-macOS 原生桌面打包需要 Xcode Command Line Tools、Python 与 PyInstaller：
+历史[双设计开槽合板工程](outputs/Aster-MCA-Nano-v0.3.1-SlotCut-Bridge2p5-32x38)曾被厂方拒单，保留为工程档案；制造入口为上表的两份独立单板 Gerber。
 
-```sh
-python3 -m venv work/desktop-build-venv
-work/desktop-build-venv/bin/python -m pip install -r requirements-desktop.txt
-work/desktop-build-venv/bin/python firmware/at32-continuous/desktop/build_desktop.py
-```
+## 开发与归档
 
-生成 `outputs/Aster Nano.app`。打包运行时不纳入源码仓库。当前界面重新连接时会回填默认门限 20，**改焊板每次重连后需确认门限为 100**。
+[开发指南 / Development guide](docs/development.md)包含固件构建、原生软件打包、离线拟合及档案校验。`work/` 中的第三方 SDK、工具链、虚拟环境和临时数据不纳入 Git。v0.7.x 是未通过真实脉冲持续处理的历史实验，v0.8.1 RAW 已判失败；两者均不作为当前采谱版本。
 
-## 构建当前固件
-
-当前构建脚本支持 `ARM_GCC_BIN`、`AT32_SDK`；也会查找 PATH 上的 ARM GCC。原实验使用 ARM GNU Toolchain 14.2.Rel1。
-
-SDK 来自 [ArteryTek/AT32F423_Firmware_Library](https://github.com/ArteryTek/AT32F423_Firmware_Library)，使用的提交为 `a60472b248c39034f111ac17e7b1286549594435`。
-
-```sh
-git clone https://github.com/ArteryTek/AT32F423_Firmware_Library.git work/at32-bringup-2026-10-14/sdk
-git -C work/at32-bringup-2026-10-14/sdk checkout a60472b248c39034f111ac17e7b1286549594435
-export ARM_GCC_BIN=/path/to/arm-gnu-toolchain/bin
-python3 firmware/at32-peak-scope/build.py
-```
-
-固件使用 CPU 144 MHz、ADC 72 MHz、内部 LDO 1.3 V，与本轮实测配置一致。构建成功仅说明软件检查通过，上板仍须单独验证。
-
-`flash.py` 是指定旧镜像到新镜像的受保护迁移工具，支持环境变量 `DFU_UTIL`，并执行全 Flash／选项字节备份和回读。默认仅接受冻结 v0.8.1 身份，`--restore-peak` 仅接受当前 v0.8.2 并回退到冻结 v0.8.0；它不是任意空白芯片下载器。固件镜像及 SHA256 位于对应 `outputs` 发布目录。v0.8.1 仅作为迁移身份参考保留，其全缓冲 RAW 模式已判失败。
-
-## 离线复核
-
-```sh
-python3 -m venv work/analysis-venv
-work/analysis-venv/bin/python -m pip install -r requirements-analysis.txt
-work/analysis-venv/bin/python analysis/20261018/fit_gain_comparison.py
-```
-
-新结果写入忽略目录 `work/replayed-gain-comparison`，不覆盖已归档实验。原生 2048 道与显示重分箱分别记录，拟合不使用平滑数据。
-
-也可对已保存的改焊后波形进行独立重放：
-
-```sh
-work/analysis-venv/bin/python firmware/at32-peak-scope/analyze_scope.py \
-  outputs/Aster-MCA-Nano-AT32-增益5倍实测-20261018/raw-Cs-present \
-  --out work/replayed-Cs-waveforms --threshold 100 --nominal-relative-gain 5.02
-```
-
-每段重新校验序号、长度、ADC 范围、CRC、统计量及停止时序；段间上传空隙不会作为连续样本拼接。正常谱只有最终直方图，不能凭它重做逐事件成形。
-
-## 第三方材料
-
-AT32 SDK 与完整工具链由使用者从其官方仓库获取。CH32 历史诊断中保留的 WCH 代码沿用原有版权声明及仅用于 WCH 微控制器的限制，见其 `SOURCE-NOTES.txt`。生产目录中的器件资料与 EDA 资源保留原来源。项目自身的开源许可证尚未指定。
+项目自身尚未指定开源许可证。仓库公开不改变第三方授权条款；CH32 中保留的 WCH 代码沿用原版权声明和仅用于 WCH 微控制器的限制，见 [SOURCE-NOTES](firmware/ch32-selftest-v0.3/SOURCE-NOTES.txt)。
