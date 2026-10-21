@@ -1,10 +1,17 @@
 # Aster MCA Nano
 
+> **Repository moved / 仓库已迁移**
+>
+> Development and current documentation are maintained at **[Aster-MCA/nano](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano)**.
+> [AT32 track](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/docs/at32/README.en.md) · [CH32 track](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/docs/ch32) · [中文](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano/README.md)
+>
+> This repository retains historical files, branches and existing download links. Nano project-authored material uses [MIT](LICENSE); [third-party terms](THIRD_PARTY_NOTICES.md) remain applicable.
+
 [中文](README.md) | English
 
 A low-cost, **32 × 18 mm USB multichannel pulse-height analyzer prototype**, with separate AT32 and CH32 development tracks. It accepts the low-voltage output of a detector's existing amplifier/shaper. The board samples pulses and accumulates a pulse-height histogram; the computer displays and saves the result.
 
-This project is separate from the FPGA-based [Aster MCA](https://github.com/pulsefoundry/Aster-MCA).
+Nano is now the MCU-based subproject of the [Aster MCA family](https://github.com/pulsefoundry/Aster-MCA/tree/main/nano).
 
 ## Development tracks
 
@@ -97,4 +104,4 @@ Historical v0.7.x waveform-streaming experiments failed sustained processing wit
 
 ## Licensing
 
-A project-wide open-source license has not yet been selected. Public visibility does not change third-party license terms. WCH code retains its original notices and WCH-microcontroller-only restrictions; see [SOURCE-NOTES](firmware/ch32-selftest-v0.3/SOURCE-NOTES.txt). Obtain the AT32 SDK and complete toolchains from their original sources.
+Nano project-authored material, including hardware designs, is licensed under [MIT](LICENSE). Public visibility does not change third-party license terms. WCH code retains its original notices and WCH-microcontroller-only restrictions; see [SOURCE-NOTES](firmware/ch32-selftest-v0.3/SOURCE-NOTES.txt). Obtain the AT32 SDK and complete toolchains from their original sources.
