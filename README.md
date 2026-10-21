@@ -1,6 +1,8 @@
-# Aster MCA Nano
+# Aster MCA Nano — AT32
 
 中文 | [English](README.en.md)
+
+本分支为 **AT32 采谱主线**：v0.8.2，4 MS/s、2048 道，R21/R22 增益改焊配置。[AT32 使用与复现指南](docs/at32/README.md) · [项目总览](https://github.com/pulsefoundry/Aster-MCA-Nano/tree/main)
 
 低成本、**32 × 18 mm** 的 USB 多道脉冲幅度分析器原型。接收探测器已有放大／整形电路的低压输出，板上完成 ADC 采样和脉冲幅度直方图累计，电脑负责显示和保存。
 

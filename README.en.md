@@ -1,6 +1,8 @@
-# Aster MCA Nano
+# Aster MCA Nano — AT32
 
 [中文](README.md) | English
+
+This is the **AT32 spectroscopy track**: v0.8.2, 4 MS/s, 2048 channels, with the documented R21/R22 gain rework. [AT32 guide](docs/at32/README.en.md) · [Project overview](https://github.com/pulsefoundry/Aster-MCA-Nano/tree/main)
 
 A low-cost, **32 × 18 mm USB multichannel pulse-height analyzer prototype**, with separate AT32 and CH32 development tracks. It accepts the low-voltage output of a detector's existing amplifier/shaper. The board samples pulses and accumulates a pulse-height histogram; the computer displays and saves the result.
 
